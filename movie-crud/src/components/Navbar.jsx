@@ -3,7 +3,13 @@ function Navbar() {
     <nav className="navbar">
       <h2>🎬 Movie CRUD</h2>
 
-      <button>Agregar Película</button>
+      <div className="search-box">
+        <input
+          type="text"
+          placeholder="Buscar película..."
+        />
+        <button>Buscar</button>
+      </div>
     </nav>
   )
 }

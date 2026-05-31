@@ -1,15 +1,15 @@
-function MovieCard() {
+function MovieCard({ titulo, imagen, puntuacion }) {
   return (
     <div className="movie-card">
 
       <img
-        src="https://via.placeholder.com/300x400"
-        alt=""
+        src={imagen}
+        alt={titulo}
       />
 
-      <h3>Batman</h3>
+      <h3>{titulo}</h3>
 
-      <p>Acción</p>
+      <p>⭐ {puntuacion}</p>
 
       <div className="buttons">
         <button>Editar</button>
