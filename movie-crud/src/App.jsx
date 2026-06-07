@@ -1,36 +1,62 @@
-import Navbar from "./components/Navbar"
-import MovieCard from "./components/MovieCard"
+import { useState, useEffect } from "react";
+import Navbar from "./components/Navbar";
+import MovieCard from "./components/MovieCard";
 
 function App() {
+  const [movies, setMovies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const apiKey = import.meta.env.VITE_TMDB_API_KEY;
+    const url =
+      "https://api.themoviedb.org/3/movie/popular?api_key=" +
+      apiKey +
+      "&language=es-ES&page=1";
+
+    fetch(url)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Error al cargar películas");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setMovies(data.results || []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError("No se pudieron cargar las películas");
+        setLoading(false);
+      });
+  }, []);
+
   return (
     <div>
-
       <Navbar />
 
       <div className="container">
+        {loading && <p>Cargando películas...</p>}
+        {error && <p>{error}</p>}
 
-        <MovieCard
-          titulo="Oppenheimer"
-          puntuacion="8.5"
-          imagen="https://image.tmdb.org/t/p/w500/ptpr0kGAckfQkJeJIt8st5dglvd.jpg"
-        />
+        {!loading &&
+          !error &&
+          movies.map((movie) => {
+            const imagen =
+              "https://image.tmdb.org/t/p/w500" + movie.poster_path;
 
-        <MovieCard
-          titulo="Interstellar"
-          puntuacion="8.8"
-          imagen="https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg"
-        />
-
-        <MovieCard
-          titulo="Joker"
-          puntuacion="8.4"
-          imagen="https://image.tmdb.org/t/p/w500/udDclJoHjfjb8Ekgsd4FDteOkCU.jpg"
-        />
-
+            return (
+              <MovieCard
+                key={movie.id}
+                titulo={movie.title}
+                puntuacion={movie.vote_average.toFixed(1)}
+                imagen={imagen}
+              />
+            );
+          })}
       </div>
-
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
