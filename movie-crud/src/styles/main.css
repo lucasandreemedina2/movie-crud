@@ -104,3 +104,23 @@ body {
   color: gold;
   font-weight: bold;
 }
+
+.search-box {
+  display: flex;
+  gap: 10px;
+}
+
+.search-box input {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+}
+
+.search-box button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  background: crimson;
+  color: white;
+  cursor: pointer;
+}

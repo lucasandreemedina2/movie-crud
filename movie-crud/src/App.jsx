@@ -4,9 +4,12 @@ import MovieCard from "./components/MovieCard";
 
 function App() {
   const [movies, setMovies] = useState([]);
+  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
+const filteredMovies = movies.filter((movie) =>
+  movie.title.toLowerCase().includes(search.toLowerCase())
+);
   useEffect(() => {
     const apiKey = import.meta.env.VITE_TMDB_API_KEY;
     const url =
@@ -32,16 +35,16 @@ function App() {
   }, []);
 
   return (
-    <div>
-      <Navbar />
+  <div>
+    <Navbar search={search} setSearch={setSearch} />
 
-      <div className="container">
+    <div className="container">
         {loading && <p>Cargando películas...</p>}
         {error && <p>{error}</p>}
 
         {!loading &&
           !error &&
-          movies.map((movie) => {
+          filteredMovies.map((movie) => {
             const imagen =
               "https://image.tmdb.org/t/p/w500" + movie.poster_path;
 
