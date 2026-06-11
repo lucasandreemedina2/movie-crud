@@ -7,11 +7,15 @@ function App() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-const filteredMovies = movies.filter((movie) =>
-  movie.title.toLowerCase().includes(search.toLowerCase())
-);
+
+  useEffect(() => {
+  if (search.trim() === "") {
+    loadPopularMovies();
+  }
+}, [search]);
   useEffect(() => {
     const apiKey = import.meta.env.VITE_TMDB_API_KEY;
+
     const url =
       "https://api.themoviedb.org/3/movie/popular?api_key=" +
       apiKey +
@@ -34,17 +38,58 @@ const filteredMovies = movies.filter((movie) =>
       });
   }, []);
 
-  return (
-  <div>
-    <Navbar search={search} setSearch={setSearch} />
+  const loadPopularMovies = () => {
+    const apiKey = import.meta.env.VITE_TMDB_API_KEY;
 
-    <div className="container">
+    const url =
+      "https://api.themoviedb.org/3/movie/popular?api_key=" +
+      apiKey +
+      "&language=es-ES&page=1";
+
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        setMovies(data.results || []);
+      });
+  };
+
+  const searchMovies = () => {
+    if (search.trim() === "") {
+      loadPopularMovies();
+      return;
+    }
+
+    const apiKey = import.meta.env.VITE_TMDB_API_KEY;
+
+    const url =
+      "https://api.themoviedb.org/3/search/movie?api_key=" +
+      apiKey +
+      "&query=" +
+      encodeURIComponent(search) +
+      "&language=es-ES";
+
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        setMovies(data.results || []);
+      });
+  };
+
+  return (
+    <div>
+      <Navbar
+        search={search}
+        setSearch={setSearch}
+        onSearch={searchMovies}
+      />
+
+      <div className="container">
         {loading && <p>Cargando películas...</p>}
         {error && <p>{error}</p>}
 
         {!loading &&
           !error &&
-          filteredMovies.map((movie) => {
+          movies.map((movie) => {
             const imagen =
               "https://image.tmdb.org/t/p/w500" + movie.poster_path;
 
