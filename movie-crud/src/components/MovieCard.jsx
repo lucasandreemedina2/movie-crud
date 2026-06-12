@@ -1,7 +1,12 @@
-function MovieCard({ titulo, imagen, puntuacion }) {
+function MovieCard({
+  titulo,
+  imagen,
+  puntuacion,
+  onClick,
+  onDelete,
+}) {
   return (
-    <div className="movie-card">
-
+    <div className="movie-card" onClick={onClick}>
       <img
         src={imagen}
         alt={titulo}
@@ -13,11 +18,17 @@ function MovieCard({ titulo, imagen, puntuacion }) {
 
       <div className="buttons">
         <button>Editar</button>
-        <button>Eliminar</button>
+        <button
+  onClick={(e) => {
+    e.stopPropagation();
+    onDelete();
+  }}
+>
+  Eliminar
+</button>
       </div>
-
     </div>
-  )
+  );
 }
 
 export default MovieCard;

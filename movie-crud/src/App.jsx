@@ -7,7 +7,7 @@ function App() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
+  const [selectedMovie, setSelectedMovie] = useState(null);
   useEffect(() => {
   if (search.trim() === "") {
     loadPopularMovies();
@@ -52,13 +52,15 @@ function App() {
         setMovies(data.results || []);
       });
   };
+const deleteMovie = (id) => {
+setMovies(movies.filter((movie) => movie.id !== id));
+};
 
   const searchMovies = () => {
     if (search.trim() === "") {
       loadPopularMovies();
       return;
     }
-
     const apiKey = import.meta.env.VITE_TMDB_API_KEY;
 
     const url =
@@ -82,7 +84,40 @@ function App() {
         setSearch={setSearch}
         onSearch={searchMovies}
       />
+ {selectedMovie && (
+  <div className="movie-details">
+    <img
+      src={
+        "https://image.tmdb.org/t/p/w500" +
+        selectedMovie.poster_path
+      }
+      alt={selectedMovie.title}
+    />
 
+    <div className="movie-info">
+      <h2>{selectedMovie.title}</h2>
+
+      <p>
+        ⭐ {selectedMovie.vote_average.toFixed(1)}
+      </p>
+
+      <p>
+        📅 {selectedMovie.release_date}
+      </p>
+
+      <p>
+        {selectedMovie.overview ||
+          "No hay descripción disponible"}
+      </p>
+
+      <button>🎬 Ver Trailer</button>
+      <button>❤️ Favorito</button>
+      <button onClick={() => setSelectedMovie(null)}>
+        🔙 Volver
+      </button>
+    </div>
+  </div>
+)}
       <div className="container">
         {loading && <p>Cargando películas...</p>}
         {error && <p>{error}</p>}
@@ -95,11 +130,16 @@ function App() {
 
             return (
               <MovieCard
-                key={movie.id}
-                titulo={movie.title}
-                puntuacion={movie.vote_average.toFixed(1)}
-                imagen={imagen}
-              />
+  key={movie.id}
+  titulo={movie.title}
+  puntuacion={movie.vote_average.toFixed(1)}
+  imagen={imagen}
+  onClick={() => {
+    setSelectedMovie(movie);
+    window.scrollTo(0, 0);
+  }}
+  onDelete={() => deleteMovie(movie.id)}
+/>
             );
           })}
       </div>
