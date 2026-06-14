@@ -12,6 +12,8 @@ function App() {
   const [newScore, setNewScore] = useState("");
   const [newImage, setNewImage] = useState("");
   const [showForm, setShowForm] = useState(false);
+  const [favorites, setFavorites] = useState([]);
+  const [showFavorites, setShowFavorites] = useState(false);
 
   useEffect(() => {
     if (search.trim() === "") {
@@ -63,6 +65,18 @@ function App() {
     );
   };
 
+  const addFavorite = () => {
+    if (!selectedMovie) return;
+
+    const existe = favorites.find(
+      (movie) => movie.id === selectedMovie.id
+    );
+
+    if (!existe) {
+      setFavorites([...favorites, selectedMovie]);
+    }
+  };
+
   const addMovie = () => {
     if (!newTitle.trim()) return;
 
@@ -103,6 +117,9 @@ function App() {
       <Navbar search={search} setSearch={setSearch} onSearch={searchMovies} />
 
       <button onClick={() => setShowForm(!showForm)}>➕ Nueva película</button>
+      <button onClick={() => setShowFavorites(!showFavorites)}>
+        ❤️ Ver Favoritos
+      </button>
 
       {showForm && (
         <div className="add-movie">
@@ -140,21 +157,48 @@ function App() {
             <p>📅 {selectedMovie.release_date}</p>
             <p>{selectedMovie.overview || "No hay descripción disponible"}</p>
             <button
-  onClick={() =>
-    window.open(
-      "https://www.youtube.com/results?search_query=" +
-        selectedMovie.title +
-        "+trailer",
-      "_blank"
-    )
-  }
->
-  🎬 Ver Trailer
-</button>
-            <button>❤️ Favorito</button>
+              onClick={() =>
+                window.open(
+                  "https://www.youtube.com/results?search_query=" +
+                    selectedMovie.title +
+                    "+trailer",
+                  "_blank"
+                )
+              }
+            >
+              🎬 Ver Trailer
+            </button>
+            <button onClick={addFavorite}>
+              ❤️ Favorito
+            </button>
             <button onClick={() => setSelectedMovie(null)}>🔙 Volver</button>
           </div>
         </div>
+      )}
+
+      {showFavorites && (
+        <>
+          <h2>❤️ Favoritos ({favorites.length})</h2>
+
+          <div className="container">
+            {favorites.map((movie) => {
+              const imagen = movie.poster_path?.startsWith("http")
+                ? movie.poster_path
+                : movie.poster_path
+                ? "https://image.tmdb.org/t/p/w500" + movie.poster_path
+                : "https://dummyimage.com/500x750/222/ffffff&text=Sin+Imagen";
+
+              return (
+                <MovieCard
+                  key={movie.id}
+                  titulo={movie.title}
+                  puntuacion={movie.vote_average.toFixed(1)}
+                  imagen={imagen}
+                />
+              );
+            })}
+          </div>
+        </>
       )}
 
       <div className="container">
